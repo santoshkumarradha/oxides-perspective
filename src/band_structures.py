@@ -79,3 +79,32 @@ def plot_Li(ax,folder="data/lifeo2/"):
         labels, ids = np.unique(labels, return_index=True)
         handles = [handles[i] for i in ids]
         i.legend(handles, labels, loc='lower left')
+        
+def plot_density(ax):
+    from ase.io.cube import read_cube_data
+    data,atom=read_cube_data("data/licoo2/monolayer.cube")
+    lat=atom.get_cell_lengths_and_angles()
+    x=np.linspace(0,lat[0],data.mean(axis=0).T[::-1].shape[1])
+    z=np.linspace(0,lat[2],data.mean(axis=0).T[::-1].shape[0])
+    # r=ax.contourf(x,z,data.mean(axis=0).T,90,cmap="Greys",vmin=1e-10,vmax=.92e-2)
+    r=ax.contourf(z,x,data.mean(axis=0),90,cmap="Greys",vmin=1e-10,vmax=.92e-2)
+    # cb=plt.colorbar(r,orientation='horizontal')
+    color={}
+    color["O"]=["#003049",9]
+    color["Co"]=["#2d6a4f",20]
+    color["Li"]=["#ff7b00",30]
+    for cnt,k in enumerate([-atom.get_cell_lengths_and_angles()[0],0,atom.get_cell_lengths_and_angles()[0]]):
+        for j,i in enumerate( atom.get_positions()):
+            c=color[atom.get_chemical_symbols()[j]]
+            ax.scatter(i[2],i[1]+k,edgecolor=c[0],facecolor="none",s=c[1]*.5e1,linewidth=2,alpha=1)
+            ax.scatter(i[2],i[1]+k,edgecolor="none",facecolor=c[0],s=c[1]*.5e1,linewidth=0,alpha=.6 )
+            # if atom.get_chemical_symbols()[j]=="Li" and (cnt==2 or cnt==1):
+            if -.1<i[1]+k<atom.get_cell_lengths_and_angles()[0]+.1:
+                ax.text(i[2]-.65,i[1]+k-.3,atom.get_chemical_symbols()[j],bbox=dict(facecolor='w', edgecolor='black', boxstyle='round,pad=.2',alpha=0.3))
+    for j,i in enumerate( atom.get_positions()):
+            c=color[atom.get_chemical_symbols()[j]]
+            ax.scatter(i[2],i[1]+k,edgecolor=c[0],facecolor="none",s=c[1]*.5e1,linewidth=2,alpha=1,label=atom.get_chemical_symbols()[j])
+    ax.legend()
+    ax.set_ylim(0,atom.get_cell_lengths_and_angles()[0])
+    ax.yaxis.set_visible(False)
+    ax.xaxis.set_visible(False)
