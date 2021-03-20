@@ -84,3 +84,6 @@ for atom in ["Li", "Na", "K", "Rb", "Cs"]:
 
 with open('data.pickle', 'wb') as handle:
     pickle.dump(values, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+print("added new things")
